@@ -1,8 +1,5 @@
 class Solution:
-    """
-    @param: s: A string
-    @return: A list of lists of string
-    """
+    # use memoization to improve speed
     def partition(self, s):
         # write your code here
         memo = {}
