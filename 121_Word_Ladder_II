@@ -1,17 +1,16 @@
 def findLadders(self, start, end, dict):
         # write your code here
+        
         dict.add(start)
         dict.add(end)
-        indexes = self.build_indexes(dict)
-        
-        distance = self.bfs(start, indexes)
-        
+        indexes = self.buid_indexes(dict)
+        distance = self.bfs(end, start, dict, indexes)
         results = []
-        self.dfs(end, start, distance, indexes, [end], results)
-        
+        self.dfs(start, end, [start], indexes, distance, results) # sequence strts with "start"
         return results
-        
-    def build_indexes(self, dict):
+    
+    def buid_indexes(self, dict):
+        # key: word set pairs
         indexes = {}
         for word in dict:
             for i in range(len(word)):
@@ -21,37 +20,35 @@ def findLadders(self, start, end, dict):
                 else:
                     indexes[key] = set([word])
         return indexes
-
-    def bfs(self, end, indexes):
-        distance = {end: 0}
-        queue = deque([end])
-        while queue:
-            word = queue.popleft()
-            for next_word in self.get_next_words(word, indexes):
-                if next_word not in distance:
-                    distance[next_word] = distance[word] + 1
-                    queue.append(next_word)
-        return distance
     
-    def get_next_words(self, word, indexes):
-        words = []
+    def get_next_words(self, word, indexes): # similar to neighbors[] in bfs template
+        words = set()
         for i in range(len(word)):
             key = word[:i] + '%' + word[i + 1:]
             for w in indexes.get(key, []):
-                words.append(w)
+                words.add(w)
         return words
-                        
-    def dfs(self, curt, target, distance, indexes, path, results):
-        # cur: current word
-        # distance: distance to end
-        # path: current shortest path
-        if curt == target:
-            results.append(list(path))
+    
+    def bfs(self, end, start, dict, indexes):
+        distance = {end:0}
+        queue = collections.deque([end]) # put end to queue first
+        
+        while queue:
+            word = queue.popleft()
+            for w in self.get_next_words(word, indexes):
+                if w not in distance:
+                    distance[w] = distance[word] + 1
+                    queue.append(w)
+        return distance
+    
+    def dfs(self, cur, end, sequence, indexes, distance, results):
+        if cur == end:
+            results.append(sequence[:])
             return
         
-        for word in self.get_next_words(curt, indexes):
-            if distance[word] != distance[curt] - 1:
+        for w in self.get_next_words(cur, indexes):
+            if distance[w] != distance[cur] - 1: # make sure it's shortest path
                 continue
-            path.append(word)
-            self.dfs(word, target, distance, indexes, path, results)
-            path.pop()
+            sequence.append(w)
+            self.dfs(w, end, sequence, indexes, distance, results)
+            sequence.pop()
