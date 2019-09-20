@@ -1,0 +1,44 @@
+DIRECTIONS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+class Solution:
+    """
+    @param board: A list of lists of character
+    @param word: A string
+    @return: A boolean
+    """
+    def exist(self, board, word):
+        # write your code here
+        
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] != word[0]:
+                    continue
+                if self.dfs(board, i, j, word, board[i][j], set([(i, j)])):
+                    return True # true as long as one board[i][j] works
+                    
+        return False # if nothing works, return False.
+                
+    
+    def dfs(self, board, x, y, word, start, visited):
+        
+        if not word.startswith(start):
+            return False
+        if start == word:
+            return True
+        # even word in word_dict, continue, because word + char can be word too
+        for (dx, dy) in DIRECTIONS:
+            next_x = x + dx
+            next_y = y + dy
+            if not self.isValid(board, next_x, next_y):
+                continue
+            if (next_x, next_y) in visited:
+                continue
+            visited.add((next_x, next_y))
+            if self.dfs(board, next_x, next_y, word, start + board[next_x][next_y], visited):
+                return True # if current start + board[next_x][next_y] works, return True.
+            visited.remove((next_x, next_y))
+            
+        return False # if nothing works, return False.
+            
+            
+    def isValid(self, board, x, y):
+        return 0 <= x < len(board) and 0 <= y < len(board[0])
