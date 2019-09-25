@@ -1,0 +1,18 @@
+def mergekSortedArrays(self, arrays):
+        # write your code here
+        result = []
+        heap = []
+        
+        for index, array in enumerate(arrays):
+            if len(array) == 0:
+                continue
+            heapq.heappush(heap, (array[0], index, 0))
+        
+        while heap:
+            (val, x, y) = heap[0]
+            result.append(val)
+            heapq.heappop(heap)
+            if y + 1 < len(arrays[x]):
+                heapq.heappush(heap, (arrays[x][y + 1], x, y + 1))
+        
+        return result
